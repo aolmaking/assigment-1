@@ -1,0 +1,70 @@
+digraph Musicana_ERD {
+  graph [
+    label="PART 1 - MUSICANA ENTITY RELATIONSHIP DIAGRAM",
+    labelloc=t,
+    fontsize=22,
+    fontname="Arial",
+    rankdir=LR,
+    bgcolor="white",
+    pad=0.35,
+    nodesep=0.55,
+    ranksep=0.85,
+    splines=polyline
+  ];
+  node [fontname="Arial", fontsize=11, color="#334155", penwidth=1.3];
+  edge [fontname="Arial", fontsize=10, color="#475569", penwidth=1.2, dir=none];
+
+  Musician [shape=box, style="filled,rounded", fillcolor="#dbeafe", label="MUSICIAN"];
+  Instrument [shape=box, style="filled,rounded", fillcolor="#dcfce7", label="INSTRUMENT"];
+  Album [shape=box, style="filled,rounded", fillcolor="#fef3c7", label="ALBUM"];
+  Song [shape=box, style="filled,rounded", fillcolor="#fce7f3", label="SONG"];
+
+  Plays [shape=diamond, style=filled, fillcolor="#f8fafc", label="PLAYS"];
+  Produces [shape=diamond, style=filled, fillcolor="#f8fafc", label="PRODUCES"];
+  Performs [shape=diamond, style=filled, fillcolor="#f8fafc", label="PERFORMS"];
+  Contains [shape=diamond, style=filled, fillcolor="#f8fafc", label="CONTAINS"];
+
+  MusicianID [shape=ellipse, label=<<U>MusicianID</U>>, style=filled, fillcolor="#ffffff"];
+  MusicianName [shape=ellipse, label="Name", style=filled, fillcolor="#ffffff"];
+  Address [shape=ellipse, label="Address", style=filled, fillcolor="#ffffff"];
+  Street [shape=ellipse, label="Street", style=filled, fillcolor="#ffffff"];
+  City [shape=ellipse, label="City", style=filled, fillcolor="#ffffff"];
+  PhoneNumber [shape=ellipse, label="Phone Number", style=filled, fillcolor="#ffffff"];
+
+  InstrumentName [shape=ellipse, label=<<U>Instrument Name</U>>, style=filled, fillcolor="#ffffff"];
+  MusicalKey [shape=ellipse, label="Musical Key", style=filled, fillcolor="#ffffff"];
+
+  AlbumID [shape=ellipse, label=<<U>Album ID</U>>, style=filled, fillcolor="#ffffff"];
+  AlbumTitle [shape=ellipse, label="Album Title (Unique)", style=filled, fillcolor="#ffffff"];
+  CopyrightDate [shape=ellipse, label="Copyright Date", style=filled, fillcolor="#ffffff"];
+
+  SongTitle [shape=ellipse, label=<<U>Song Title (Unique)</U>>, style=filled, fillcolor="#ffffff"];
+  Author [shape=ellipse, label="Author", style=filled, fillcolor="#ffffff"];
+
+  Musician -> Plays [label="0..N"];
+  Plays -> Instrument [label="0..N"];
+  Musician -> Produces [label="0..N"];
+  Produces -> Album [label="1"];
+  Musician -> Performs [label="0..N"];
+  Performs -> Song [label="1..N"];
+  Album -> Contains [label="1..N"];
+  Contains -> Song [label="0..1"];
+
+  Musician -> MusicianID;
+  Musician -> MusicianName;
+  Musician -> Address;
+  Address -> Street;
+  Address -> City;
+  Musician -> PhoneNumber;
+
+  Instrument -> InstrumentName;
+  Instrument -> MusicalKey;
+  Album -> AlbumID;
+  Album -> AlbumTitle;
+  Album -> CopyrightDate;
+  Song -> SongTitle;
+  Song -> Author;
+
+  {rank=same; MusicianID; Musician; Instrument; InstrumentName}
+  {rank=same; AlbumID; Album; Song; SongTitle}
+}

@@ -1,0 +1,50 @@
+digraph User_Product_Mapping {
+  graph [
+    label="PART 2 - RELATIONAL SCHEMA MAPPING",
+    labelloc=t,
+    fontsize=22,
+    fontname="Arial",
+    rankdir=LR,
+    bgcolor="white",
+    pad=0.35,
+    nodesep=0.8,
+    ranksep=1.1
+  ];
+  node [shape=plain, fontname="Arial"];
+  edge [fontname="Arial", fontsize=11, color="#475569", penwidth=1.3, dir=none];
+
+  Users [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="10">
+      <TR><TD BGCOLOR="#dbeafe"><B>Users</B></TD></TR>
+      <TR><TD ALIGN="LEFT"><U>UserID</U> (PK)</TD></TR>
+      <TR><TD ALIGN="LEFT">FirstName</TD></TR>
+      <TR><TD ALIGN="LEFT">LastName</TD></TR>
+      <TR><TD ALIGN="LEFT">Email</TD></TR>
+      <TR><TD ALIGN="LEFT">Role</TD></TR>
+      <TR><TD ALIGN="LEFT">Password</TD></TR>
+    </TABLE>
+  >];
+
+  UserPhones [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="10">
+      <TR><TD BGCOLOR="#dcfce7"><B>UserPhones</B></TD></TR>
+      <TR><TD ALIGN="LEFT"><U>UserID</U> (PK, FK)</TD></TR>
+      <TR><TD ALIGN="LEFT"><U>Phone</U> (PK)</TD></TR>
+    </TABLE>
+  >];
+
+  Products [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="10">
+      <TR><TD BGCOLOR="#fef3c7"><B>Products</B></TD></TR>
+      <TR><TD ALIGN="LEFT"><U>ProductID</U> (PK)</TD></TR>
+      <TR><TD ALIGN="LEFT">Name</TD></TR>
+      <TR><TD ALIGN="LEFT">Stock</TD></TR>
+      <TR><TD ALIGN="LEFT">Price</TD></TR>
+      <TR><TD ALIGN="LEFT">IsDeleted</TD></TR>
+      <TR><TD ALIGN="LEFT">OwnerUserID (FK)</TD></TR>
+    </TABLE>
+  >];
+
+  Users -> UserPhones [label="1 : N"];
+  Users -> Products [label="1 : N"];
+}
