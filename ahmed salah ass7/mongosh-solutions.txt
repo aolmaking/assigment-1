@@ -1,0 +1,201 @@
+// Assignment 7 - MongoDB Shell Solutions
+//
+// How to run: open mongosh, then paste the commands in order,
+// or run the whole file:  mongosh --file mongosh-solutions.txt
+// Every command uses the same database.
+
+db = db.getSiblingDB("assignment7");
+
+// Question 1 - Create the books collection with title validation
+// (rejects a missing title, an empty title, and a title with spaces only)
+db.createCollection("books", {
+    validator: {
+        $jsonSchema: {
+            bsonType: "object",
+            required: ["title"],
+            properties: {
+                title: {
+                    bsonType: "string",
+                    minLength: 1,
+                    pattern: "\\S"
+                }
+            }
+        }
+    },
+    validationLevel: "strict",
+    validationAction: "error"
+});
+
+// Question 2 - Create the authors collection by inserting a document (implicit collection)
+db.authors.insertOne({
+    name: "Author1",
+    nationality: "British"
+});
+
+// Question 3 - Create the capped logs collection with a 1MB size limit
+db.createCollection("logs", {
+    capped: true,
+    size: 1024 * 1024
+});
+
+// Question 4 - Create an index on the title field of books
+db.books.createIndex({ title: 1 });
+
+// Question 5 - Insert one book
+db.books.insertOne({
+    title: "Book1",
+    author: "Ali",
+    year: 1937,
+    genres: ["Fantasy", "Adventure"]
+});
+
+// Question 6 - Insert multiple books (six records, at least three are required)
+db.books.insertMany([
+    {
+        title: "Future",
+        author: "George Orwell",
+        year: 2020,
+        genres: ["Science Fiction"]
+    },
+    {
+        title: "To Kill a Mockingbird",
+        author: "Harper Lee",
+        year: 1960,
+        genres: ["Classic", "Fiction"]
+    },
+    {
+        title: "Brave New World",
+        author: "Aldous Huxley",
+        year: 2006,
+        genres: ["Dystopian", "Science Fiction"]
+    },
+    {
+        title: "The Great Gatsby",
+        author: "F. Scott Fitzgerald",
+        year: 1925,
+        genres: ["Classic", "Fiction"]
+    },
+    {
+        title: "Moby Dick",
+        author: "Herman Melville",
+        year: 1851,
+        genres: ["Adventure", "Classic"]
+    },
+    {
+        title: "War and Peace",
+        author: "Leo Tolstoy",
+        year: 1869,
+        genres: ["Historical Fiction", "Philosophy"]
+    }
+]);
+
+// Question 7 - Insert a new log for the book titled "Future"
+// book_id stores the _id of that book, so Question 19 can join the two collections
+db.logs.insertOne({
+    book_id: db.books.findOne({ title: "Future" })._id,
+    action: "borrowed"
+});
+
+// Question 8 - Update the book titled "Future": change the year to 2022
+db.books.updateOne(
+    { title: "Future" },
+    { $set: { year: 2022 } }
+);
+
+// Question 9 - Find the book titled "Brave New World"
+db.books.findOne({
+    title: "Brave New World"
+});
+
+// Question 10 - Find all books published between 1990 and 2010
+db.books.find({
+    year: {
+        $gte: 1990,
+        $lte: 2010
+    }
+});
+
+// Question 11 - Find books where genres includes "Science Fiction"
+db.books.find({
+    genres: "Science Fiction"
+});
+
+// Question 12 - Sort by year descending, skip the first two books, return the next three
+db.books.find({}).sort({ year: -1 }).skip(2).limit(3);
+
+// Question 13 - Find books where the year field is stored as an integer
+// First add one book whose year is text, to show the difference
+// (it runs after Question 12 so it does not change the Question 12 result)
+db.books.insertOne({
+    title: "Old Journal",
+    author: "Unknown",
+    year: "2005",
+    genres: ["History"]
+});
+
+db.books.find({
+    year: { $type: "int" }
+});
+
+// Question 14 - Find books whose genres do not include "Horror" or "Science Fiction"
+db.books.find({
+    genres: {
+        $nin: ["Horror", "Science Fiction"]
+    }
+});
+
+// Question 15 - Delete all books published before 2000
+db.books.deleteMany({
+    year: { $lt: 2000 }
+});
+
+// Question 16 - Aggregation: books published after 2000, sorted by year descending
+db.books.aggregate([
+    { $match: { year: { $gt: 2000 } } },
+    { $sort: { year: -1 } }
+]);
+
+// Question 17 - Aggregation: books published after 2000 with only title, author and year
+db.books.aggregate([
+    { $match: { year: { $gt: 2000 } } },
+    {
+        $project: {
+            _id: 0,
+            title: 1,
+            author: 1,
+            year: 1
+        }
+    }
+]);
+
+// Question 18 - Aggregation: break the genres array into separate documents
+db.books.aggregate([
+    { $unwind: "$genres" }
+]);
+
+// Question 19 - Aggregation: join the logs collection with the books collection
+// Each log is matched with its book (logs.book_id = books._id) and shows book_details
+db.logs.aggregate([
+    {
+        $lookup: {
+            from: "books",
+            localField: "book_id",
+            foreignField: "_id",
+            as: "book_details"
+        }
+    },
+    {
+        $project: {
+            _id: 0,
+            action: 1,
+            "book_details.title": 1,
+            "book_details.author": 1,
+            "book_details.year": 1
+        }
+    }
+]);
+
+// Optional check for Question 1 - each of these must fail with "Document failed validation"
+// db.books.insertOne({ author: "No title" });
+// db.books.insertOne({ title: "" });
+// db.books.insertOne({ title: "   " });

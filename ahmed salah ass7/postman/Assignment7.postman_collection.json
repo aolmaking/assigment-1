@@ -1,0 +1,1003 @@
+{
+  "info": {
+    "_postman_id": "0ce7f1d1-a19d-47da-82d1-a73a3603c011",
+    "name": "Assignment 7 - Express and MongoDB",
+    "description": "All 19 Assignment 7 endpoints in the same order as the questions. Run the whole collection from the top with the Collection Runner (the server and MongoDB must be running).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Q1 - Create Books Collection With Title Validation",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/collection/books",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "collection",
+            "books"
+          ]
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is one of [200, 201]\", function () {",
+              "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Q2 - Create Authors Collection By Inserting Author",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/collection/authors",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "collection",
+            "authors"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Author1\",\n  \"nationality\": \"British\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 201\", function () {",
+              "    pm.response.to.have.status(201);",
+              "});",
+              "pm.test(\"Returns insertedId\", function () {",
+              "    pm.expect(pm.response.json()).to.have.property(\"insertedId\");",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Q3 - Create Capped Logs Collection (1MB)",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/collection/logs/capped",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "collection",
+            "logs",
+            "capped"
+          ]
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is one of [200, 201]\", function () {",
+              "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Q4 - Create Index On Books Title",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/collection/books/index",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "collection",
+            "books",
+            "index"
+          ]
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test(\"Index name is title_1\", function () {",
+              "    pm.expect(pm.response.json().indexName).to.eql(\"title_1\");",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Q5 - Add One Book",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/books",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "books"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Book1\",\n  \"author\": \"Ali\",\n  \"year\": 1937,\n  \"genres\": [\n    \"Fantasy\",\n    \"Adventure\"\n  ]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 201\", function () {",
+              "    pm.response.to.have.status(201);",
+              "});",
+              "pm.test(\"Returns insertedId\", function () {",
+              "    pm.expect(pm.response.json()).to.have.property(\"insertedId\");",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Q6 - Add Multiple Books (Batch)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/books/batch",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "books",
+            "batch"
+          ]
+        },
+        "description": "The body is an array of books, as shown in the assignment. { \"books\": [...] } is also accepted.",
+        "body": {
+          "mode": "raw",
+          "raw": "[\n  {\n    \"title\": \"Future\",\n    \"author\": \"George Orwell\",\n    \"year\": 2020,\n    \"genres\": [\n      \"Science Fiction\"\n    ]\n  },\n  {\n    \"title\": \"To Kill a Mockingbird\",\n    \"author\": \"Harper Lee\",\n    \"year\": 1960,\n    \"genres\": [\n      \"Classic\",\n      \"Fiction\"\n    ]\n  },\n  {\n    \"title\": \"Brave New World\",\n    \"author\": \"Aldous Huxley\",\n    \"year\": 2006,\n    \"genres\": [\n      \"Dystopian\",\n      \"Science Fiction\"\n    ]\n  },\n  {\n    \"title\": \"The Great Gatsby\",\n    \"author\": \"F. Scott Fitzgerald\",\n    \"year\": 1925,\n    \"genres\": [\n      \"Classic\",\n      \"Fiction\"\n    ]\n  },\n  {\n    \"title\": \"Moby Dick\",\n    \"author\": \"Herman Melville\",\n    \"year\": 1851,\n    \"genres\": [\n      \"Adventure\",\n      \"Classic\"\n    ]\n  },\n  {\n    \"title\": \"War and Peace\",\n    \"author\": \"Leo Tolstoy\",\n    \"year\": 1869,\n    \"genres\": [\n      \"Historical Fiction\",\n      \"Philosophy\"\n    ]\n  }\n]",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 201\", function () {",
+              "    pm.response.to.have.status(201);",
+              "});",
+              "pm.test(\"At least three books inserted\", function () {",
+              "    pm.expect(pm.response.json().insertedCount).to.be.at.least(3);",
+              "});",
+              "// Save the id of \"Future\" (the first book) to use it in the Q7 log",
+              "pm.collectionVariables.set(\"futureId\", pm.response.json().insertedIds[\"0\"]);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Q7 - Add Log For Future Book",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/logs",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "logs"
+          ]
+        },
+        "description": "Run Q6 first: it saves {{futureId}}.",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"book_id\": \"{{futureId}}\",\n  \"action\": \"borrowed\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 201\", function () {",
+              "    pm.response.to.have.status(201);",
+              "});",
+              "pm.test(\"Returns insertedId\", function () {",
+              "    pm.expect(pm.response.json()).to.have.property(\"insertedId\");",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Q8 - Update Future Book Year To 2022",
+      "request": {
+        "method": "PATCH",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/books/Future",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "books",
+            "Future"
+          ]
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test(\"One document matched\", function () {",
+              "    pm.expect(pm.response.json().matchedCount).to.eql(1);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Q9 - Find Book By Title (Brave New World)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/books/title?title=Brave%20New%20World",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "books",
+            "title"
+          ],
+          "query": [
+            {
+              "key": "title",
+              "value": "Brave%20New%20World"
+            }
+          ]
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test(\"Title is Brave New World\", function () {",
+              "    pm.expect(pm.response.json().title).to.eql(\"Brave New World\");",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Q10 - Find Books Published Between 1990 And 2010",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/books/year?from=1990&to=2010",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "books",
+            "year"
+          ],
+          "query": [
+            {
+              "key": "from",
+              "value": "1990"
+            },
+            {
+              "key": "to",
+              "value": "2010"
+            }
+          ]
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test(\"All years are between 1990 and 2010\", function () {",
+              "    const books = pm.response.json();",
+              "    pm.expect(books).to.be.an(\"array\").that.is.not.empty;",
+              "    books.forEach(b => pm.expect(b.year).to.be.within(1990, 2010));",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Q11 - Find Books With Science Fiction Genre",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/books/genre?genre=Science%20Fiction",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "books",
+            "genre"
+          ],
+          "query": [
+            {
+              "key": "genre",
+              "value": "Science%20Fiction"
+            }
+          ]
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test(\"Every book includes Science Fiction\", function () {",
+              "    const books = pm.response.json();",
+              "    pm.expect(books).to.not.be.empty;",
+              "    books.forEach(b => pm.expect(b.genres).to.include(\"Science Fiction\"));",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Q12 - Skip Two Books, Limit Three, Sort Year Descending",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/books/skip-limit",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "books",
+            "skip-limit"
+          ]
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test(\"Returns 3 books sorted by year descending\", function () {",
+              "    const years = pm.response.json().map(b => b.year);",
+              "    pm.expect(years).to.have.lengthOf(3);",
+              "    pm.expect(years).to.eql([...years].sort((a, b) => b - a));",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Q13 - Add Book With Year Stored As Text (Demo For Q13)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/books",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "books"
+          ]
+        },
+        "description": "Adds one book whose year is a string so Q13 can show the difference. It runs after Q12 so it does not change the Q12 result.",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Old Journal\",\n  \"author\": \"Unknown\",\n  \"year\": \"2005\",\n  \"genres\": [\n    \"History\"\n  ]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 201\", function () {",
+              "    pm.response.to.have.status(201);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Q13 - Find Books Where Year Is An Integer",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/books/year-integer",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "books",
+            "year-integer"
+          ]
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test(\"No book has a text year\", function () {",
+              "    const books = pm.response.json();",
+              "    pm.expect(books).to.not.be.empty;",
+              "    books.forEach(b => pm.expect(b.year).to.be.a(\"number\"));",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Q14 - Find Books Without Horror Or Science Fiction",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/books/exclude-genres",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "books",
+            "exclude-genres"
+          ]
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test(\"No book has Horror or Science Fiction\", function () {",
+              "    const books = pm.response.json();",
+              "    pm.expect(books).to.not.be.empty;",
+              "    books.forEach(b => {",
+              "        pm.expect(b.genres).to.not.include(\"Horror\");",
+              "        pm.expect(b.genres).to.not.include(\"Science Fiction\");",
+              "    });",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Q15 - Delete Books Published Before 2000",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/books/before-year?year=2000",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "books",
+            "before-year"
+          ],
+          "query": [
+            {
+              "key": "year",
+              "value": "2000"
+            }
+          ]
+        },
+        "description": "Uses the DELETE method. The assignment line also mentions GET, but a delete should not be a GET request."
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test(\"Returns deletedCount\", function () {",
+              "    pm.expect(pm.response.json().deletedCount).to.be.a(\"number\");",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Q16 - Aggregation: Books After 2000 Sorted By Year Descending",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/books/aggregate1",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "books",
+            "aggregate1"
+          ]
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test(\"Books after 2000, newest first\", function () {",
+              "    const years = pm.response.json().map(b => b.year);",
+              "    pm.expect(years).to.not.be.empty;",
+              "    years.forEach(y => pm.expect(y).to.be.above(2000));",
+              "    pm.expect(years).to.eql([...years].sort((a, b) => b - a));",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Q17 - Aggregation: Title, Author And Year Only",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/books/aggregate2",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "books",
+            "aggregate2"
+          ]
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test(\"Only title, author and year are returned\", function () {",
+              "    const books = pm.response.json();",
+              "    pm.expect(books).to.not.be.empty;",
+              "    books.forEach(b => pm.expect(Object.keys(b)).to.have.members([\"title\", \"author\", \"year\"]));",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Q18 - Aggregation: Unwind Genres Array",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/books/aggregate3",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "books",
+            "aggregate3"
+          ]
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test(\"Every genres value is a single string\", function () {",
+              "    const books = pm.response.json();",
+              "    pm.expect(books).to.not.be.empty;",
+              "    books.forEach(b => pm.expect(b.genres).to.be.a(\"string\"));",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Q19 - Aggregation: Join Logs With Book Details",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/books/aggregate4",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "books",
+            "aggregate4"
+          ]
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test(\"Each log has action and book_details\", function () {",
+              "    const logs = pm.response.json();",
+              "    pm.expect(logs).to.not.be.empty;",
+              "    logs.forEach(l => {",
+              "        pm.expect(l).to.have.property(\"action\");",
+              "        pm.expect(l.book_details).to.be.an(\"array\");",
+              "    });",
+              "    pm.expect(logs.some(l => l.book_details.length > 0)).to.eql(true);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Extra - Validation Checks",
+      "description": "Requests that must be rejected. They do not change any data.",
+      "item": [
+        {
+          "name": "Extra - Book Without Title Is Rejected",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/books",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "books"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"author\": \"No Title\",\n  \"year\": 2000\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 400\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Extra - Book With Empty Title Is Rejected",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/books",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "books"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"\",\n  \"author\": \"Empty Title\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 400\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Extra - Book With Spaces Only Title Is Rejected",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/books",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "books"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"   \",\n  \"author\": \"Spaces\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 400\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Extra - Batch With Less Than Three Books Is Rejected",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/books/batch",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "books",
+                "batch"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "[\n  {\n    \"title\": \"One\"\n  },\n  {\n    \"title\": \"Two\"\n  }\n]",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 400\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000"
+    },
+    {
+      "key": "futureId",
+      "value": ""
+    }
+  ]
+}
